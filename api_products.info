@@ -1,0 +1,6 @@
+name = Example API Call
+description = Example API Call to Edge Management Server
+package = Example API
+core = 7.x
+version = "7.x-1.0"
+

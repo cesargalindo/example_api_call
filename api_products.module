@@ -1,0 +1,92 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function api_products_menu() {
+  $items = array();
+
+  $items['get_api_products'] = array(
+    'title'             => t('Get API Products'),
+    'page callback'     => 'api_products_get',
+    'access callback'   => TRUE,
+    'type'              => MENU_NORMAL_ITEM,
+  );
+
+
+  $items['get_environment_details'] = array(
+    'title'             => t('Get Environment Details'),
+    'page callback'     => 'get_environment_details',
+    'access callback'   => TRUE,
+    'type'              => MENU_NORMAL_ITEM,
+  );
+
+
+  return $items;
+}
+
+
+/**
+ * Call Edge to get API Products
+ *
+ */
+function api_products_get() {
+
+  module_load_include('php', 'api_products', 'APIProductsExample');
+  $client = devconnect_default_org_config();
+  $dca = new Apigee\ManagementAPI\APIProductExample($client);
+
+  try {
+    $dca->getAPIProducts();
+
+    $output = '<h3>API product response code: ' . $dca->getResponseCode() . '</h3><br>';
+    $output .= '<h3>API Products:<br>' . $dca->getResponseText() . '</h3>';
+
+    return $output;
+
+  } catch (Apigee\Exceptions\EnvironmentException $e) {
+    watchdog('apiProductsExample', $e->getMessage(), array(), WATCHDOG_ERROR);
+    return FALSE;
+  } catch (Apigee\Exceptions\ParameterException $e) {
+    watchdog('apiProductsExample', $e->getMessage(), array(), WATCHDOG_ERROR);
+    return FALSE;
+  } catch (Exception $e) {
+    watchdog('apiProductsExample', $e->getMessage(), array(), WATCHDOG_ERROR);
+    return FALSE;
+  }
+
+  return '<h1>ERROR: API Call failed.</h1>';
+
+}
+
+
+/**
+ * Call Edge to get Environment Details
+ *
+ */
+function get_environment_details() {
+
+  module_load_include('php', 'api_products', 'APIProductsExample');
+  $client = devconnect_default_org_config();
+  $dca = new Apigee\ManagementAPI\APIProductExample($client);
+
+  try {
+    $dca->getEnvironmentDetails('test');
+    $output = '<h3>Environment Details:<br><br>' . $dca->getResponseText() . '</h3>';
+
+    return $output;
+
+  } catch (Apigee\Exceptions\EnvironmentException $e) {
+    watchdog('apiProductsExample', $e->getMessage(), array(), WATCHDOG_ERROR);
+    return FALSE;
+  } catch (Apigee\Exceptions\ParameterException $e) {
+    watchdog('apiProductsExample', $e->getMessage(), array(), WATCHDOG_ERROR);
+    return FALSE;
+  } catch (Exception $e) {
+    watchdog('apiProductsExample', $e->getMessage(), array(), WATCHDOG_ERROR);
+    return FALSE;
+  }
+
+  return '<h1>ERROR: API Call failed.</h1>';
+
+}
